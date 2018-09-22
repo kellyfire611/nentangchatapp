@@ -7,8 +7,14 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View, Button} from 'react-native';
 import firebase from 'react-native-firebase';
+import {
+  AdMobBanner,
+  AdMobRewarded,
+  AdMobInterstitial,
+  PublisherBanner,
+} from 'react-native-admob';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -23,10 +29,48 @@ export default class App extends Component<Props> {
     super(props);
   }
 
+  componentDidMout() {
+    AdMobInterstitial.setTestDevices([AdMobInterstitial.simulatorId]);
+    AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712');
+
+    AdMobInterstitial.addEventListener('adLoaded',
+      () => console.log('AdMobInterstitial adLoaded')
+    );
+    AdMobInterstitial.addEventListener('adFailedToLoad',
+      (error) => console.warn(error)
+    );
+    AdMobInterstitial.addEventListener('adOpened',
+      () => console.log('AdMobInterstitial => adOpened')
+    );
+    AdMobInterstitial.addEventListener('adClosed',
+      () => {
+        console.log('AdMobInterstitial => adClosed');
+        AdMobInterstitial.requestAd().catch(error => console.warn(error));
+      }
+    );
+    AdMobInterstitial.addEventListener('adLeftApplication',
+      () => console.log('AdMobInterstitial => adLeftApplication')
+    );
+
+    AdMobInterstitial.requestAd().catch(error => console.warn(error));
+  }
+
+  componentWillUnmount() {
+    AdMobInterstitial.removeAllListeners();
+  }
+
+  showInterstitial() {
+    AdMobInterstitial.showAd().catch(error => console.warn(error));
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <Text>Test react native firebase</Text>
+        <Button
+          title="Show Interstitial and preload next"
+          onPress={this.showInterstitial}
+        />
       </View>
     );
   }

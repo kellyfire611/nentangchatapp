@@ -137,6 +137,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-admob')
     // This should be here already
     implementation project(':react-native-firebase')
 
